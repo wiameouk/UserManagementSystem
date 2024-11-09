@@ -3,7 +3,7 @@ package com.example.user_service.Service;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.user_service.Enitity.User;
 import com.example.user_service.EntityRepository.UserRepository;
@@ -23,7 +23,7 @@ public class UserService implements IUserService {
     
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    //private PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -97,16 +97,18 @@ public class UserService implements IUserService {
             {
                 user.setRole(userRequest.role());
             }
-            userRepository.save(user);
-
-        
-        
+            userRepository.save(user);       
     }
     @Override
     @Transactional
     public void changePassword(String userId, ChangePasswordRequest psswrequest) {
-        // TODO Auto-generated method stub
-        
+        User user=userRepository.findById(UUID.fromString(userId))
+            .orElseThrow(()-> new UserNotFoundException("Utilisateur non trouve"));
+            if (!passwordEncoder.matches(psswrequest.oldPassword(), user.getPassword())) {
+                throw new InvalidDataException ("L'ancien mot de passe est incorrect.");
+            }
+              user.setPassword(passwordEncoder.encode(psswrequest.changePassword()));
+            userRepository.save(user);
     }
    
     
