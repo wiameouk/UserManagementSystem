@@ -30,39 +30,36 @@ public class UserService implements IUserService {
     @Transactional
     public void saveUser(UserRequest userRequest) {
         
-        if(userRepository.existsByUsername(userRequest.username()) || userRepository.existsByEmail(userRequest.email()))
-        {
+        if(userRepository.existsByUsername(userRequest.username()) || userRepository.existsByEmail(userRequest.email())){
             throw new InvalidDataException("Cannot Create user because Already exist");
-
         }
         User user =userMapper.toUser(userRequest);
+        user.setPassword(passwordEncoder.encode(userRequest.password()));
         userRepository.save(user);    
     }
 
     @Override
-    @Transactional
     public UserResponse getUserById(String userId) {
         return userRepository.findById(UUID.fromString(userId))
-        .map(userMapper::toUserResponse)
-        .orElseThrow(()-> new UserNotFoundException("User Service :: User not Found" +userId));
+            .map(userMapper::toUserResponse)
+            .orElseThrow(()-> new UserNotFoundException("User Service :: User not Found" +userId));
     }
 
     @Override
-    @Transactional
     public List<UserResponse> getAllUsers() {
-        
         return userRepository.findAll()
-        .stream()
-        .map(userMapper::toUserResponse)
-        .collect(Collectors.toList());
+            .stream()
+            .map(userMapper::toUserResponse)
+            .collect(Collectors.toList());
     }
    
     @Override
     @Transactional
     public void deleteUser(String userId) {
-        if(userRepository.existsById(UUID.fromString(userId)))
-        {
+        if(userRepository.existsById(UUID.fromString(userId))){
             userRepository.deleteById(UUID.fromString(userId));
+        }else{
+            throw new UserNotFoundException("User Service :: User not Found" +userId);
         }
         
     }   
@@ -71,45 +68,38 @@ public class UserService implements IUserService {
     public void updateUser(String userId, UserRequest userRequest) {
         User user = userRepository.findById(UUID.fromString(userId))
             .orElseThrow(()-> new UserNotFoundException("User Service :: not found with id " +userId) );
-
-            if(!user.getEmail().equals(userRequest.email()))
-            {
-                if(!userRepository.existsByEmail(userRequest.email()))
-                {
-                    user.setEmail(userRequest.email());
-                }else{
-                    throw new InvalidDataException("User Service :: cannot create user already exist email");
-                }
+        if(!user.getEmail().equals(userRequest.email())){
+            if(!userRepository.existsByEmail(userRequest.email())){
+                user.setEmail(userRequest.email());
+            }else{
+                throw new InvalidDataException("User Service :: cannot create user already exist email");
             }
-            if(!user.getUsername().equals(userRequest.username())){
-                if(!userRepository.existsByUsername(userRequest.username()))
-                {
-                    user.setUsername(userRequest.username());
-                }else{
-                    throw new InvalidDataException("user service :: cannot create user already exist username");
-                }
+        }
+        if(!user.getUsername().equals(userRequest.username())){
+            if(!userRepository.existsByUsername(userRequest.username())){
+                user.setUsername(userRequest.username());
+            }else{
+                throw new InvalidDataException("user service :: cannot create user already exist username");
             }
-            if(userRequest.active() != null)
-            {
-                user.setActive(userRequest.active());
-            }
-            if(userRequest.role() !=null)
-            {
-                user.setRole(userRequest.role());
-            }
-            userRepository.save(user);       
+        }
+        if(userRequest.active() != null)
+        {
+            user.setActive(userRequest.active());
+        }
+        if(userRequest.role() !=null){
+            user.setRole(userRequest.role());
+        }
+        userRepository.save(user);       
     }
     @Override
     @Transactional
     public void changePassword(String userId, ChangePasswordRequest psswrequest) {
         User user=userRepository.findById(UUID.fromString(userId))
             .orElseThrow(()-> new UserNotFoundException("Utilisateur non trouve"));
-            if (!passwordEncoder.matches(psswrequest.oldPassword(), user.getPassword())) {
-                throw new InvalidDataException ("L'ancien mot de passe est incorrect.");
-            }
-              user.setPassword(passwordEncoder.encode(psswrequest.changePassword()));
-            userRepository.save(user);
-    }
-   
-    
+        if (!passwordEncoder.matches(psswrequest.oldPassword(), user.getPassword())) {
+            throw new InvalidDataException ("L'ancien mot de passe est incorrect.");
+        }
+        user.setPassword(passwordEncoder.encode(psswrequest.changePassword()));
+        userRepository.save(user);
+    } 
 }

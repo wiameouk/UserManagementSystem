@@ -29,9 +29,7 @@ public class UserController {
     public ResponseEntity<Void> saveNewUser(@RequestBody @Valid UserRequest userRequest)
     {
         userService.saveUser(userRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-
-        
+        return ResponseEntity.status(HttpStatus.CREATED).build();      
     }
     @GetMapping
     public ResponseEntity<List<UserResponse>> findAllUsers(){
