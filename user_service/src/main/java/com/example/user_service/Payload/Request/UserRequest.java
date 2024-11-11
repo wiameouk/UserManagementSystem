@@ -19,9 +19,11 @@ public record UserRequest(
     @NotNull
     @NotBlank
     String password,
-
+    
+    @NotNull
     Boolean active,
-
+     
+    @NotNull
     ERole role
     
 

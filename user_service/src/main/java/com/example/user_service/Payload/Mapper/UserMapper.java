@@ -15,6 +15,8 @@ public class UserMapper {
         .username(userRequest.username())
         .email(userRequest.email())
         .password(userRequest.password())
+        .active(userRequest.active())
+        .role(userRequest.role())
         .build();
     }
     public UserResponse toUserResponse(User user)
