@@ -1,5 +1,8 @@
 package com.example.user_service.Payload.Mapper;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.example.user_service.Enitity.User;
@@ -16,17 +19,27 @@ public class UserMapper {
         .email(userRequest.email())
         .password(userRequest.password())
         .active(userRequest.active())
-        .role(userRequest.role())
         .build();
     }
     public UserResponse toUserResponse(User user)
     {
+        List<String> roleId = user.getRoles().stream()
+                                .map(role -> role.getId().toString())
+                                .collect(Collectors.toList());
+
+       List<String> permissionId = user.getRoles().stream()
+                                      .flatMap(role -> role.getPermissions().stream())
+                                      .map(permission -> permission.getId().toString())
+                                      .distinct()
+                                      .collect(Collectors.toList());
         return new UserResponse( 
             user.getId().toString(),
             user.getUsername(),
             user.getEmail(),
             user.getActive(),
-            user.getRole()            
+            roleId,
+            permissionId
+
         );
     }
     

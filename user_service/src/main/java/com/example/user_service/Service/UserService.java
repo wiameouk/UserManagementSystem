@@ -1,11 +1,14 @@
 package com.example.user_service.Service;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.example.user_service.Enitity.Role;
 import com.example.user_service.Enitity.User;
+import com.example.user_service.EntityRepository.RoleRepository;
 import com.example.user_service.EntityRepository.UserRepository;
 import com.example.user_service.Exception.InvalidDataException;
 import com.example.user_service.Exception.UserNotFoundException;
@@ -22,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 public class UserService implements IUserService {
     
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -86,10 +91,14 @@ public class UserService implements IUserService {
         {
             user.setActive(userRequest.active());
         }
-        if(userRequest.role() !=null){
-            user.setRole(userRequest.role());
-        }
-        userRepository.save(user);       
+        if(userRequest.roleId() !=null){
+            List<Role> roles = userRequest.roleId().stream()
+            .map(roleId -> roleRepository.findById(UUID.fromString(roleId))
+                .orElseThrow(() -> new InvalidDataException("Role not found with ID: " + roleId)))
+            .collect(Collectors.toList());
+        user.setRoles(roles);
+    }
+        userRepository.save(user);   
     }
     @Override
     @Transactional

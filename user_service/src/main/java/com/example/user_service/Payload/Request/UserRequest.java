@@ -1,6 +1,9 @@
 package com.example.user_service.Payload.Request;
 
-import com.example.user_service.Enum.ERole;
+
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -22,10 +25,10 @@ public record UserRequest(
     
     @NotNull
     Boolean active,
-     
-    @NotNull
-    ERole role
-    
 
+    List<String> roleId,
+
+    List<String> permissionId
+    
 ) {
 } 

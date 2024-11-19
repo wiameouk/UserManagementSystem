@@ -1,6 +1,6 @@
 package com.example.user_service.Payload.Response;
 
-import com.example.user_service.Enum.ERole;
+import java.util.List;
 
 public record UserResponse ( 
     
@@ -8,7 +8,9 @@ public record UserResponse (
     String username,
     String email,
     Boolean active,
-    ERole role
+    List<String> roleId,
+    List<String> permissionId
+
 ){
     
 }

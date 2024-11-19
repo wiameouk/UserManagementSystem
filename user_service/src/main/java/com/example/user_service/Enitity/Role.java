@@ -22,33 +22,28 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@Getter
 @Setter
+@Getter
+@Builder
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name ="role")
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
     @Column(unique = true , nullable = false)
-    private String username;
-    
+    private String name;
     @Column(unique = true , nullable = false)
-    private String email;
-    
-    @Column(unique = true , nullable = false)
-    private String password;
-
-    private Boolean active;
-    @ManyToMany(fetch = FetchType.LAZY)
+    private String description;   
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users;
+     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
+        name = "role_permissions",
+        joinColumns = @JoinColumn(name = "role_id"),
+        inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
-    private List<Role> roles;
+    private List<Permission> permissions;
 
-
+    
 }
