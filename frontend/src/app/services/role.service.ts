@@ -11,7 +11,7 @@ export class RoleService {
   private API_URL= 'http://localhost:8080/api/v1/roles';
 
   constructor(private http: HttpClient) { }
-  createRole(roleRequest: RoleRequest ): Observable<void> {
+  createRole(roleRequest: RoleRequest): Observable<void> {
     return this.http.post<void>(this.API_URL, roleRequest)
   }
   getRole(id: String):Observable<RoleResponse>{

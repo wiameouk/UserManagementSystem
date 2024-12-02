@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { UserRequest } from '../models/user-request';
 import { Observable } from 'rxjs';
 import { UserResponse } from '../models/user-response';
+import { ChangePassword } from '../models/change-password';
 
 @Injectable({
   providedIn: 'root'
@@ -26,5 +27,7 @@ export class UserService {
   updateUser(id: String, userRequest: UserRequest): Observable<void>{
     return this.http.put<void>(`${this.API_URL}/${id}`, userRequest);
   }
-
+  updatePassword(id: String, changePassword: ChangePassword): Observable<void>{
+    return this.http.put<void>(`${this.API_URL}/${id}/password`,changePassword);
+  }
 }
